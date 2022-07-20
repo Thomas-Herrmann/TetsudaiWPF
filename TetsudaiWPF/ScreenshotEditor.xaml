@@ -1,0 +1,65 @@
+﻿<Window x:Class="TetsudaiWPF.ScreenshotEditor"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:TetsudaiWPF"
+        mc:Ignorable="d"
+        Title="ScreenshotEditor" ResizeMode="NoResize" SizeToContent="Manual" ShowInTaskbar="False" Loaded="Window_Loaded" WindowStyle="None" KeyDown="Window_KeyDown" Deactivated="Window_Deactivated" MouseLeftButtonDown="Window_MouseLeftButtonDown" MouseLeftButtonUp="Window_MouseLeftButtonUp" MouseMove="Window_MouseMove" KeyUp="Window_KeyUp">
+    <Canvas x:Name="canvas">
+        <Canvas x:Name="drawingArea" Width="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Canvas}}, Path=ActualWidth}" Height="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Canvas}}, Path=ActualHeight}">
+        </Canvas>
+        <Path Fill="#99000000" Stroke="WhiteSmoke" StrokeThickness="1px" StrokeDashArray="4 4">
+            <Path.Data>
+                <CombinedGeometry GeometryCombineMode="Xor">
+                    <CombinedGeometry.Geometry1>
+                        <RectangleGeometry x:Name="shade" />
+                    </CombinedGeometry.Geometry1>
+                    <CombinedGeometry.Geometry2>
+                        <RectangleGeometry x:Name="selection" />
+                    </CombinedGeometry.Geometry2>
+                </CombinedGeometry>
+            </Path.Data>
+        </Path>
+        <Rectangle x:Name="cornerNW" Width="5px" Height="5px" Fill="White" Stroke="Gray" Visibility="Hidden" />
+        <Rectangle x:Name="cornerNE" Width="5px" Height="5px" Fill="White" Stroke="Gray" Visibility="Hidden" />
+        <Rectangle x:Name="cornerSW" Width="5px" Height="5px" Fill="White" Stroke="Gray" Visibility="Hidden" />
+        <Rectangle x:Name="cornerSE" Width="5px" Height="5px" Fill="White" Stroke="Gray" Visibility="Hidden" />
+        <Rectangle x:Name="cornerNWE" Width="5px" Height="5px" Fill="White" Stroke="Gray" Visibility="Hidden" />
+        <Rectangle x:Name="cornerSWE" Width="5px" Height="5px" Fill="White" Stroke="Gray" Visibility="Hidden" />
+        <Rectangle x:Name="cornerENS" Width="5px" Height="5px" Fill="White" Stroke="Gray" Visibility="Hidden" />
+        <Rectangle x:Name="cornerWNS" Width="5px" Height="5px" Fill="White" Stroke="Gray" Visibility="Hidden" />
+        <Menu x:Name="featureBar" Visibility="Hidden" Width="Auto" Height="Auto" Background="#222222" DockPanel.Dock="Top" Foreground="WhiteSmoke" FontWeight="Bold">
+            <MenuItem Header="copy" Click="CopyMenuItem_Click"></MenuItem>
+            <MenuItem Header="手伝い" IsEnabled="False"></MenuItem>
+            <MenuItem Header="google" IsEnabled="False"></MenuItem>
+            <MenuItem Header="imgur" IsEnabled="False"></MenuItem>
+            <MenuItem Header="save" Click="SaveMenuItem_Click"></MenuItem>
+            <MenuItem Header="print" IsEnabled="False"></MenuItem>
+            <MenuItem Header="cancel" Click="CancelMenuItem_Click"></MenuItem>
+        </Menu>
+        <Menu x:Name="editBar" Visibility="Hidden" Width="Auto" Height="Auto" Background="#222222" Foreground="WhiteSmoke" FontWeight="Bold" Loaded="editBar_Loaded">
+            <Menu.Resources>
+                <SolidColorBrush x:Key="deselectBrush" Color="#222222" />
+                <SolidColorBrush x:Key="selectBrush" Color="Green" />
+                <SolidColorBrush x:Key="DisabledForegroundBrush" Color="WhiteSmoke" />
+            </Menu.Resources>
+            <Menu.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <VirtualizingStackPanel Orientation="Vertical" />
+                </ItemsPanelTemplate>
+            </Menu.ItemsPanel>
+
+            <MenuItem Header="move" IsEnabled="False" Background="{StaticResource selectBrush}" Click="MoveMenuItem_Click" Cursor="Hand" />
+            <MenuItem Header="pen" Click="PenMenuItem_Click" Cursor="Hand" />
+            <MenuItem Header="line" Click="LineMenuItem_Click" Cursor="Hand" />
+            <MenuItem Header="arrow" Click="ArrowMenuItem_Click" Cursor="Hand" />
+            <MenuItem Header="square" Click="SquareMenuItem_Click" Cursor="Hand" />
+            <MenuItem Header="text" Click="TextMenuItem_Click" Cursor="Hand" />
+        </Menu>
+        <Menu x:Name="undoRedoBar" Visibility="Hidden" Width="Auto" Height="Auto" Background="#222222" DockPanel.Dock="Top" Foreground="WhiteSmoke" FontWeight="Bold">
+            <MenuItem x:Name="undoItem" Header="undo" Click="UndoItem_Click" IsEnabled="False"></MenuItem>
+            <MenuItem x:Name="redoItem" Header="redo" Click="RedoItem_Click" IsEnabled="False"></MenuItem>
+        </Menu>
+    </Canvas>
+</Window>
