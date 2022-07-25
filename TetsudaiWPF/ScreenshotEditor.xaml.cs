@@ -150,7 +150,7 @@ namespace TetsudaiWPF
                 this.Cursor = System.Windows.Input.Cursors.SizeWE;
             else if ((cornerNWE.IsVisible && isWithinResizeTolerance(rectCopy.TopLeft + (Vector)new System.Windows.Point(rectCopy.Width / 2, 0), position)) || (cornerSWE.IsVisible && isWithinResizeTolerance(rectCopy.BottomLeft + (Vector)new System.Windows.Point(rectCopy.Width / 2, 0), position)))
                 this.Cursor = System.Windows.Input.Cursors.SizeNS;
-            else if ((featureBar.Visibility == Visibility.Visible && new Rect(new System.Windows.Point(Canvas.GetLeft(featureBar), Canvas.GetTop(featureBar)), featureBar.RenderSize).Contains(position)) || (editBar.Visibility == Visibility.Visible && new Rect(new System.Windows.Point(Canvas.GetLeft(editBar), Canvas.GetTop(editBar)), editBar.RenderSize).Contains(position)) || (undoRedoBar.Visibility == Visibility.Visible && new Rect(new System.Windows.Point(Canvas.GetLeft(undoRedoBar), Canvas.GetTop(undoRedoBar)), undoRedoBar.RenderSize).Contains(position)))
+            else if ((featureBar.Visibility == Visibility.Visible && new Rect(new System.Windows.Point(Canvas.GetLeft(featureBar), Canvas.GetTop(featureBar)), featureBar.RenderSize).Contains(position)) || (editBar.Visibility == Visibility.Visible && new Rect(new System.Windows.Point(Canvas.GetLeft(editBar), Canvas.GetTop(editBar)), editBar.RenderSize).Contains(position)) || (undoRedoBar.Visibility == Visibility.Visible && new Rect(new System.Windows.Point(Canvas.GetLeft(undoRedoBar), Canvas.GetTop(undoRedoBar)), undoRedoBar.RenderSize).Contains(position)) || (toolSettingsPanel.Visibility == Visibility.Visible && new Rect(new System.Windows.Point(Canvas.GetLeft(toolSettingsPanel), Canvas.GetTop(toolSettingsPanel)), toolSettingsPanel.RenderSize).Contains(position)))
                 this.Cursor = System.Windows.Input.Cursors.Arrow;
             else
                 this.Cursor = tool.ContextualCursor(position);
@@ -239,13 +239,17 @@ namespace TetsudaiWPF
                 editPhase = EditPhase.ResizingNWE;
             else if (isWithinResizeTolerance(rectCopy.BottomLeft + (Vector)new System.Windows.Point(rectCopy.Width / 2, 0), position))
                 editPhase = EditPhase.ResizingSWE;
-            else
+            else if (!(toolSettingsPanel.Visibility == Visibility.Visible && new Rect(new System.Windows.Point(Canvas.GetLeft(toolSettingsPanel), Canvas.GetTop(toolSettingsPanel)), toolSettingsPanel.RenderSize).Contains(position)))
                 tool.MouseDown(sender, e);
 
-            HideResizingIndicators();
-            featureBar.Visibility = Visibility.Hidden;
-            editBar.Visibility = Visibility.Hidden;
-            undoRedoBar.Visibility = Visibility.Hidden;
+            if (!(toolSettingsPanel.Visibility == Visibility.Visible && new Rect(new System.Windows.Point(Canvas.GetLeft(toolSettingsPanel), Canvas.GetTop(toolSettingsPanel)), toolSettingsPanel.RenderSize).Contains(position)))
+            {
+                HideResizingIndicators();
+                featureBar.Visibility = Visibility.Hidden;
+                editBar.Visibility = Visibility.Hidden;
+                toolSettingsPanel.Visibility = Visibility.Hidden;
+                undoRedoBar.Visibility = Visibility.Hidden;
+            }
         }
 
         private void Window_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
@@ -260,6 +264,7 @@ namespace TetsudaiWPF
             featureBar.Visibility = Visibility.Visible;
             editBar.Visibility = Visibility.Visible;
             undoRedoBar.Visibility = Visibility.Visible;
+            toolSettingsPanel.Visibility = toolSettingsPanel.Children.Count > 0 ? Visibility.Visible : Visibility.Hidden;
             UpdateCursor(e.GetPosition(this));
         }
 
@@ -313,6 +318,9 @@ namespace TetsudaiWPF
 
             Canvas.SetTop(undoRedoBar, rectCopy.Bottom + 10);
             Canvas.SetLeft(undoRedoBar, rectCopy.Right - undoRedoBar.ActualWidth);
+
+            Canvas.SetTop(toolSettingsPanel, rectCopy.Top);
+            Canvas.SetLeft(toolSettingsPanel, rectCopy.Right + editBar.ActualWidth + 20);
         }
 
         private void CopyMenuItem_Click(object sender, RoutedEventArgs e) => SetClipboard();
@@ -338,15 +346,25 @@ namespace TetsudaiWPF
                 });
         }
 
-        private void PenMenuItem_Click(object sender, RoutedEventArgs e) => tool = new PenTool(drawingArea, undoList, redoList);
-        private void LineMenuItem_Click(object sender, RoutedEventArgs e) => tool = new LineTool(drawingArea, undoList, redoList);
-        private void ArrowMenuItem_Click(object sender, RoutedEventArgs e) => tool = new ArrowTool(drawingArea, undoList, redoList);
-        private void SquareMenuItem_Click(object sender, RoutedEventArgs e) => tool = new RectangleTool(drawingArea, undoList, redoList);
+        private void SetTool(EditTool newTool)
+        {
+            tool = newTool;
+            toolSettingsPanel.Children.Clear();
+            tool.SettingsUIElements.ForEach(uie => toolSettingsPanel.Children.Add(uie));
+            toolSettingsPanel.Visibility = toolSettingsPanel.Children.Count > 0 ? Visibility.Visible : Visibility.Hidden;
+        }
+
+        private void PenMenuItem_Click(object sender, RoutedEventArgs e) => SetTool(new PenTool(drawingArea, undoList));
+
+
+        private void LineMenuItem_Click(object sender, RoutedEventArgs e) => SetTool(new LineTool(drawingArea, undoList));
+        private void ArrowMenuItem_Click(object sender, RoutedEventArgs e) => SetTool(new ArrowTool(drawingArea, undoList));
+        private void SquareMenuItem_Click(object sender, RoutedEventArgs e) => SetTool(new RectangleTool(drawingArea, undoList));
         private void TextMenuItem_Click(object sender, RoutedEventArgs e)
         {
             // TODO!
         }
-        private void MoveMenuItem_Click(object sender, RoutedEventArgs e) => tool = new MoveTool(canvas, selection);
+        private void MoveMenuItem_Click(object sender, RoutedEventArgs e) => SetTool(new MoveTool(canvas, selection));
 
         private void Window_KeyUp(object sender, System.Windows.Input.KeyEventArgs e) => tool.KeyUp(sender, e);
 

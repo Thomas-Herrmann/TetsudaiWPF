@@ -12,7 +12,7 @@ using System.Windows.Shapes;
 
 namespace TetsudaiWPF
 {
-    internal class LineTool : EditTool
+    internal class LineTool : DrawingEditTool
     {
         private bool isDrawing;
         private Canvas _canvas;
@@ -20,18 +20,16 @@ namespace TetsudaiWPF
         private Line line;
         private bool shouldSnap;
         private BindingList<UndoableEditAction> _undoList;
-        private BindingList<UndoableEditAction> _redoList;
 
-        public LineTool(Canvas canvas, BindingList<UndoableEditAction> undoList, BindingList<UndoableEditAction> redoList)
+        public LineTool(Canvas canvas, BindingList<UndoableEditAction> undoList)
         {
             _canvas = canvas;
             isDrawing = false;
             shouldSnap = false;
             _undoList = undoList;
-            _redoList = redoList;
         }
 
-        public Cursor ContextualCursor(Point position)
+        public override Cursor ContextualCursor(Point position)
         {
             if (!isDrawing || lineStart == position)
                 return Cursors.ScrollAll;
@@ -49,19 +47,19 @@ namespace TetsudaiWPF
                 return Cursors.ScrollSE;
         }
 
-        public void KeyDown(object sender, KeyEventArgs e)
+        public override void KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.LeftShift)
                 shouldSnap = true;
         }
 
-        public void KeyUp(object sender, KeyEventArgs e)
+        public override void KeyUp(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.LeftShift)
                 shouldSnap = false;
         }
 
-        public void MouseDown(object sender, MouseButtonEventArgs e)
+        public override void MouseDown(object sender, MouseButtonEventArgs e)
         {
             isDrawing = true;
             lineStart = e.GetPosition(_canvas);
@@ -70,8 +68,8 @@ namespace TetsudaiWPF
                 Y1 = lineStart.Y,
                 X2 = lineStart.X,
                 Y2 = lineStart.Y,
-                Stroke = Brushes.Red,
-                StrokeThickness = 5,
+                Stroke = StrokeColor,
+                StrokeThickness = StrokeThickness,
                 StrokeStartLineCap = PenLineCap.Round,
                 StrokeEndLineCap = PenLineCap.Round
         };
@@ -80,7 +78,7 @@ namespace TetsudaiWPF
 
         }
 
-        public void MouseMove(object sender, MouseEventArgs e)
+        public override void MouseMove(object sender, MouseEventArgs e)
         {
             if (isDrawing)
             {
@@ -112,7 +110,7 @@ namespace TetsudaiWPF
             }
         }
 
-        public void MouseUp(object sender, MouseButtonEventArgs e)
+        public override void MouseUp(object sender, MouseButtonEventArgs e)
         {
             if (isDrawing && line != null)
                 _undoList.Add(new AddShape(line, _canvas));

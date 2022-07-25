@@ -26,6 +26,8 @@ namespace TetsudaiWPF
         private Canvas _canvas;
         private RectangleGeometry _selection;
 
+        public List<UIElement> SettingsUIElements => new List<UIElement>();
+
         public MoveTool(Canvas canvas, RectangleGeometry selection)
         {
             _canvas = canvas;

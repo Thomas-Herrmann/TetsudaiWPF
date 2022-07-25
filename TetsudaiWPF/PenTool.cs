@@ -9,42 +9,41 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
+using Xceed.Wpf.Toolkit;
 
 namespace TetsudaiWPF
 {
-    internal class PenTool : EditTool
+    internal class PenTool : DrawingEditTool
     {
         private Canvas _canvas;
         private PathFigure lineSegments;
         private Path path;
         private bool isDrawing;
         private BindingList<UndoableEditAction> _undoList;
-        private BindingList<UndoableEditAction> _redoList;
 
-        public PenTool(Canvas canvas, BindingList<UndoableEditAction> undoList, BindingList<UndoableEditAction> redoList)
+        public PenTool(Canvas canvas, BindingList<UndoableEditAction> undoList)
         {
             _canvas = canvas;
             isDrawing = false;
             _undoList = undoList;
-            _redoList = redoList;
         }
 
-        public Cursor ContextualCursor(Point position)
+        public override Cursor ContextualCursor(Point position)
         {
             return Cursors.Pen;
         }
 
-        public void KeyDown(object sender, KeyEventArgs e)
+        public override void KeyDown(object sender, KeyEventArgs e)
         {
             // TODO
         }
 
-        public void KeyUp(object sender, KeyEventArgs e)
+        public override void KeyUp(object sender, KeyEventArgs e)
         {
             // TODO
         }
 
-        public void MouseDown(object sender, MouseButtonEventArgs e)
+        public override void MouseDown(object sender, MouseButtonEventArgs e)
         {
             lineSegments = new PathFigure();
             lineSegments.StartPoint = e.GetPosition(_canvas);
@@ -56,8 +55,8 @@ namespace TetsudaiWPF
 
             path = new Path
             {
-                Stroke = new SolidColorBrush(Colors.Red),
-                StrokeThickness = 5,
+                Stroke = StrokeColor,
+                StrokeThickness = StrokeThickness,
                 Data = new PathGeometry(figures),
                 StrokeStartLineCap = PenLineCap.Round,
                 StrokeLineJoin = PenLineJoin.Round,
@@ -70,13 +69,13 @@ namespace TetsudaiWPF
 
         }
 
-        public void MouseMove(object sender, MouseEventArgs e)
+        public override void MouseMove(object sender, MouseEventArgs e)
         {
             if (isDrawing)
                 lineSegments.Segments.Add(new LineSegment(e.GetPosition(_canvas), true));
         }
 
-        public void MouseUp(object sender, MouseButtonEventArgs e)
+        public override void MouseUp(object sender, MouseButtonEventArgs e)
         {
             if (isDrawing && path != null)
                 _undoList.Add(new AddShape(path, _canvas));
