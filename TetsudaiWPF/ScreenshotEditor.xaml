@@ -33,7 +33,7 @@
         <Rectangle x:Name="cornerWNS" Width="5px" Height="5px" Fill="White" Stroke="Gray" Visibility="Hidden" />
         <Menu x:Name="featureBar" Visibility="Hidden" Width="Auto" Height="Auto" Background="#222222" DockPanel.Dock="Top" Foreground="WhiteSmoke" FontWeight="Bold">
             <MenuItem Header="copy" Click="CopyMenuItem_Click" Cursor="Hand"></MenuItem>
-            <MenuItem Header="手伝い" IsEnabled="False" Cursor="Hand"></MenuItem>
+            <MenuItem Header="手伝い" Cursor="Hand" Click="TetsudaiMenuItem_Click"></MenuItem>
             <MenuItem Header="google" IsEnabled="False" Cursor="Hand"></MenuItem>
             <MenuItem Header="imgur" IsEnabled="False" Cursor="Hand"></MenuItem>
             <MenuItem Header="save" Click="SaveMenuItem_Click" Cursor="Hand"></MenuItem>

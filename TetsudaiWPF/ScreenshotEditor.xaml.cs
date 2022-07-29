@@ -17,6 +17,7 @@ using System.Windows.Controls.Primitives;
 using Microsoft.Windows.Themes;
 using System.ComponentModel;
 using System.Windows.Forms;
+using IronOcr;
 
 namespace TetsudaiWPF
 {
@@ -54,7 +55,13 @@ namespace TetsudaiWPF
             undoList = new BindingList<UndoableEditAction>();
             redoList = new BindingList<UndoableEditAction>();
 
-            undoList.ListChanged += (sender, e) => undoItem.IsEnabled = undoList.Count > 0;
+            undoList.ListChanged += (sender, e) => 
+            {
+                undoItem.IsEnabled = undoList.Count > 0;
+
+                if (e.ListChangedType == ListChangedType.ItemAdded && !undoList[undoList.Count - 1].WasRedone)
+                    undoList[undoList.Count - 1].OnAddedToUndoList(redoList);
+            };
             redoList.ListChanged += (sender, e) => redoItem.IsEnabled = redoList.Count > 0;
 
             InitializeComponent();
@@ -168,8 +175,27 @@ namespace TetsudaiWPF
                 Redo();
             else if (e.Key == Key.S && (Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control && featureBar.Visibility == Visibility.Visible)
                 SaveScreenshot();
+            else if (e.Key == Key.J && (Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control && featureBar.Visibility == Visibility.Visible)
+                UseTetsudai();
             else
                 tool.KeyDown(sender, e);
+        }
+
+        private void UseTetsudai()
+        {
+            Cursor = System.Windows.Input.Cursors.Wait;
+            ForceCursor = true;
+            IsEnabled = false;
+
+            RenderTargetBitmap rtb = new RenderTargetBitmap((int)drawingArea.Width, (int)drawingArea.Height, 96d, 96d, PixelFormats.Default);
+
+            rtb.Render(drawingArea);
+
+            var cropped = new CroppedBitmap(rtb, new Int32Rect((int)selection.Rect.X, (int)selection.Rect.Y, (int)selection.Rect.Width, (int)selection.Rect.Height));
+
+            new Tetsudai(cropped).Show();
+
+            Close();
         }
 
         private void SaveScreenshot()
@@ -399,6 +425,11 @@ namespace TetsudaiWPF
         private void SaveMenuItem_Click(object sender, RoutedEventArgs e)
         {
             SaveScreenshot();
+        }
+
+        private void TetsudaiMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            UseTetsudai();
         }
     }
 }
