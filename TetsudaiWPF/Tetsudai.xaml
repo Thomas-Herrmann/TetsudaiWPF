@@ -24,20 +24,8 @@
                 
             </TextBox>
         </Grid>
-        <ListView x:Name="wordViewer" Grid.Column="1" Background="#222222" Foreground="WhiteSmoke">
-            <ListView.View>
-                <GridView>
-                    <GridViewColumn>
-                        <ListView>
-                            <ListView.View>
-                                <GridView>
-                                    <GridViewColumn />
-                                </GridView>
-                            </ListView.View>
-                        </ListView>
-                    </GridViewColumn>
-                </GridView>
-            </ListView.View>
-        </ListView>
+        <ScrollViewer Grid.Column="1" Background="#222222" Foreground="WhiteSmoke" >
+            <StackPanel x:Name="wordViewer" Height="Auto" Width="Auto" />
+        </ScrollViewer>  
     </Grid>
 </Window>

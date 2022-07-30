@@ -108,17 +108,14 @@ namespace TetsudaiWPF
             var lookup = await client.GetDefinitionAsync(trimmed);
 
             if (lookup.Success)
+            {
+                wordViewer.Children.Clear();
+
                 foreach (var word in lookup.Data)
-                {
-                    var s = $"selection={trimmed}";
+                    wordViewer.Children.Add(new WordWrapper(word));
 
-                    foreach (var reading in word.Japanese)
-                        s += $" :: {reading.Reading}";
-
-                    System.Diagnostics.Debug.WriteLine(s);
-                }
-
-            //wordViewer.ItemsSource = lookup.Data;
+                wordViewer.UpdateLayout();
+            }
 
             Cursor = Cursors.Arrow;
             ForceCursor = false;
