@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:TetsudaiWPF"
         xmlns:paz="clr-namespace:Wpf.Controls.PanAndZoom;assembly=Wpf.Controls.PanAndZoom"
         mc:Ignorable="d"
-        Title="Tetsudai" Height="450" Width="800" Background="#222222">
+        Title="Tetsudai" Height="450" Width="800" Background="#222222" Icon="/Resources/tetsudai128.png">
     <Grid Margin="5">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="1*" />
@@ -20,7 +20,7 @@
             <paz:ZoomBorder Cursor="ScrollAll" Grid.Row="0" Background="#111111" ClipToBounds="True">
                 <Image x:Name="screenshotPreview" />
             </paz:ZoomBorder>
-            <TextBox x:Name="TextViewer" Grid.Row="1" SelectionChanged="TextViewer_SelectionChanged" PreviewMouseLeftButtonDown="TextViewer_PreviewMouseLeftButtonDown" PreviewMouseLeftButtonUp="TextViewer_PreviewMouseLeftButtonUp">
+            <TextBox x:Name="TextViewer" Grid.Row="1" SelectionChanged="TextViewer_SelectionChanged" PreviewMouseLeftButtonDown="TextViewer_PreviewMouseLeftButtonDown" PreviewMouseLeftButtonUp="TextViewer_PreviewMouseLeftButtonUp" Margin="0,5,0,0">
                 
             </TextBox>
         </Grid>
